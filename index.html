@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐾 Animal Quiz</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    color:white;
+    background:#101820;
+}
+
+/* HEADER */
+header{
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 35px;
+    background:rgba(0,0,0,.55);
+}
+
+.logo{
+    font-size:25px;
+    font-weight:bold;
+}
+
+.home-btn{
+    background:white;
+    color:#111;
+    border:none;
+    padding:10px 18px;
+    border-radius:20px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* HOME */
+.hero{
+    min-height:calc(100vh - 70px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+
+    background:
+        linear-gradient(
+            rgba(0,0,0,.18),
+            rgba(0,0,0,.28)
+        ),
+        url("https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=2000&q=90");
+
+    background-size:cover;
+    background-position:center;
+}
+
+.hero-content{
+    width:100%;
+    max-width:900px;
+    padding:30px;
+    text-shadow:0 2px 8px rgba(0,0,0,.8);
+}
+
+.hero h1{
+    font-size:55px;
+    margin-bottom:15px;
+}
+
+.hero p{
+    font-size:20px;
+    margin-bottom:25px;
+}
+
+/* NAME */
+.name-box{
+    margin-bottom:25px;
+}
+
+.name-box input{
+    width:100%;
+    max-width:400px;
+    padding:13px 16px;
+    border:none;
+    border-radius:25px;
+    font-size:16px;
+    outline:none;
+}
+
+/* TEST CARDS */
+.tests{
+    display:flex;
+    justify-content:center;
+    align-items:stretch;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.test-card{
+    width:165px;
+    min-height:105px;
+    padding:15px 10px;
+    border-radius:15px;
+    background:rgba(0,0,0,.45);
+    border:1px solid rgba(255,255,255,.3);
+    backdrop-filter:blur(5px);
+    transition:.2s;
+}
+
+.test-card:hover{
+    transform:translateY(-3px);
+}
+
+.test-card h3{
+    font-size:18px;
+    margin-bottom:6px;
+}
+
+.test-card p{
+    font-size:12px;
+    margin-bottom:10px;
+}
+
+.test-btn{
+    border:none;
+    padding:7px 14px;
+    border-radius:18px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.locked{
+    opacity:.55;
+}
+
+.locked .test-btn{
+    cursor:not-allowed;
+}
+
+/* QUIZ + RESULT */
+#quizPage,
+#resultPage{
+    display:none;
+    min-height:calc(100vh - 70px);
+    padding:35px 20px;
+
+    background:
+        linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.55)),
+        url("https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=2000&q=90");
+
+    background-size:cover;
+    background-position:center;
+}
+
+.quiz-box{
+    max-width:800px;
+    margin:auto;
+    background:rgba(0,0,0,.62);
+    padding:30px;
+    border-radius:22px;
+    backdrop-filter:blur(8px);
+}
+
+.quiz-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.question-number{
+    font-size:18px;
+}
+
+.timer{
+    font-size:24px;
+    font-weight:bold;
+}
+
+.progress{
+    width:100%;
+    height:7px;
+    background:rgba(255,255,255,.2);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:25px;
+}
+
+.progress-bar{
+    height:100%;
+    width:100%;
+    background:white;
+    transition:width 1s linear;
+}
+
+.question{
+    font-size:25px;
+    line-height:1.35;
+    margin-bottom:25px;
+}
+
+.options{
+    display:grid;
+    gap:12px;
+}
+
+.option{
+    padding:15px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.1);
+    color:white;
+    cursor:pointer;
+    text-align:left;
+    font-size:16px;
+}
+
+.option:hover{
+    background:rgba(255,255,255,.2);
+}
+
+.option.correct{
+    background:#168a45;
+}
+
+.option.wrong{
+    background:#b82d2d;
+}
+
+.option.disabled{
+    pointer-events:none;
+}
+
+.feedback{
+    margin-top:20px;
+    padding:15px;
+    border-radius:12px;
+    background:rgba(255,255,255,.1);
+    display:none;
+}
+
+.feedback-title{
+    font-weight:bold;
+    margin-bottom:7px;
+}
+
+/* RESULT */
+.result-box{
+    max-width:650px;
+    margin:80px auto;
+    text-align:center;
+    background:rgba(0,0,0,.65);
+    padding:45px 25px;
+    border-radius:25px;
+    backdrop-filter:blur(8px);
+}
+
+.result-box h1{
+    font-size:42px;
+    margin-bottom:15px;
+}
+
+.final-score{
+    font-size:65px;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.result-buttons{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+}
+
+.result-buttons button{
+    border:none;
+    padding:12px 20px;
+    border-radius:22px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* TIME UP */
+.timeup{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.82);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:100;
+}
+
+.timeup-box{
+    text-align:center;
+}
+
+.timeup-box h1{
+    font-size:55px;
+    margin-bottom:15px;
+}
+
+.timeup-box p{
+    font-size:20px;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+
+    header{
+        padding:0 18px;
+    }
+
+    .logo{
+        font-size:20px;
+    }
+
+    .hero h1{
+        font-size:38px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+
+    .test-card{
+        width:145px;
+        min-height:100px;
+    }
+
+    .question{
+        font-size:21px;
+    }
+
+    .quiz-box{
+        padding:22px 17px;
+    }
+
+    .result-box h1{
+        font-size:34px;
+    }
+
+    .final-score{
+        font-size:52px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">🐾 Animal Quiz</div>
+
+    <button class="home-btn" onclick="goHome()">
+        Home
+    </button>
+
+</header>
+
+
+<!-- HOME -->
+
+<section class="hero" id="homePage">
+
+<div class="hero-content">
+
+    <h1>Animal Quiz</h1>
+
+    <p>
+        Test your animal knowledge and earn points!
+    </p>
+
+    <div class="name-box">
+
+        <input
+            type="text"
+            id="playerName"
+            placeholder="Enter your name"
+            maxlength="20"
+        >
+
+    </div>
+
+
+    <div class="tests">
+
+        <!-- TEST 1 -->
+
+        <div class="test-card">
+
+            <h3>Test 1</h3>
+
+            <p>Questions 1–10</p>
+
+            <button
+                class="test-btn"
+                onclick="startTest(1)"
+            >
+                Start
+            </button>
+
+        </div>
+
+
+        <!-- TEST 2 -->
+
+        <div
+            class="test-card locked"
+            id="testCard2"
+        >
+
+            <h3>🔒 Test 2</h3>
+
+            <p>Questions 11–20</p>
+
+            <button
+                class="test-btn"
+                onclick="startTest(2)"
+            >
+                Locked
+            </button>
+
+        </div>
+
+
+        <!-- TEST 3 -->
+
+        <div
+            class="test-card locked"
+            id="testCard3"
+        >
+
+            <h3>🔒 Test 3</h3>
+
+            <p>Questions 21–30</p>
+
+            <button
+                class="test-btn"
+                onclick="startTest(3)"
+            >
+                Locked
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- QUIZ -->
+
+<section id="quizPage">
+
+<div class="quiz-box">
+
+    <div class="quiz-top">
+
+        <div
+            class="question-number"
+            id="questionNumber"
+        >
+            Question 1 / 10
+        </div>
+
+        <div class="timer">
+
+            <span id="timer">15</span>s
+
+        </div>
+
+    </div>
+
+
+    <div class="progress">
+
+        <div
+            class="progress-bar"
+            id="progressBar"
+        ></div>
+
+    </div>
+
+
+    <div
+        class="question"
+        id="question"
+    ></div>
+
+
+    <div
+        class="options"
+        id="options"
+    ></div>
+
+
+    <div
+        class="feedback"
+        id="feedback"
+    >
+
+        <div
+            class="feedback-title"
+            id="feedbackTitle"
+        ></div>
+
+        <div id="feedbackText"></div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- RESULT -->
+
+<section id="resultPage">
+
+<div class="result-box">
+
+    <h1>🎉 Test Complete!</h1>
+
+    <p id="resultPlayer"></p>
+
+    <div
+        class="final-score"
+        id="finalScore"
+    >
+        0 / 100
+    </div>
+
+    <p id="resultMessage"></p>
+
+    <br>
+
+    <div class="result-buttons">
+
+        <button onclick="retryTest()">
+            Try Again
+        </button>
+
+        <button onclick="goHome()">
+            Back to Home
+        </button>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- TIME UP -->
+
+<div
+    class="timeup"
+    id="timeup"
+>
+
+<div class="timeup-box">
+
+    <h1>TIME'S UP!</h1>
+
+    <p>0 points for this question</p>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   QUESTIONS
+========================= */
+
+const questions = [
+
+{
+question:"What color is a polar bear's skin beneath its fur?",
+options:["Pink","Black","White","Dark brown"],
+answer:1,
+explanation:"A polar bear's skin is black."
+},
+
+{
+question:"Why don't polar bears naturally hunt penguins?",
+options:[
+"Penguins are too fast",
+"Penguins live in Antarctica while polar bears live in the Arctic",
+"Polar bears cannot eat birds",
+"Penguins are poisonous"
+],
+answer:1,
+explanation:"Polar bears live in the Arctic, while penguins naturally live mainly in the Southern Hemisphere."
+},
+
+{
+question:"What do flamingos feed their chicks with during their early development?",
+options:[
+"Small fish",
+"Insects",
+"A nutritious secretion called crop milk",
+"Algae"
+],
+answer:2,
+explanation:"Flamingo parents produce a nutritious secretion called crop milk."
+},
+
+{
+question:"Why can a polar bear's fur appear white even though the hairs contain little or no white pigment?",
+options:[
+"The hairs scatter light",
+"The bear covers its fur with snow",
+"Its skin changes the color of the fur",
+"The fur contains blue pigment"
+],
+answer:0,
+explanation:"Polar bear hairs are largely transparent and scatter light."
+},
+
+{
+question:"Which animal can taste using receptors located on its arms?",
+options:["Octopus","Penguin","Giraffe","Crocodile"],
+answer:0,
+explanation:"Octopuses have chemical receptors on their suckers."
+},
+
+{
+question:"What is unusual about a male seahorse?",
+options:[
+"It lays eggs on land",
+"It carries developing embryos in a specialized pouch",
+"It produces milk",
+"It cannot swim"
+],
+answer:1,
+explanation:"Female seahorses transfer their eggs to the male's brood pouch."
+},
+
+{
+question:"Which animal is known to produce a milk-like substance called crop milk?",
+options:["Flamingo","Penguin","Eagle","Ostrich"],
+answer:0,
+explanation:"Flamingos produce crop milk to feed their chicks."
+},
+
+{
+question:"Why can reindeer see ultraviolet light?",
+options:[
+"Their eyes have adaptations that allow more UV light to reach the retina",
+"They have larger pupils than all other mammals",
+"Their eyes are naturally blue",
+"They have no rods in their eyes"
+],
+answer:0,
+explanation:"Reindeer eyes have adaptations that allow more ultraviolet light to reach the retina."
+},
+
+{
+question:"Which animal is famous for having a tongue that can be longer than its body?",
+options:["Chameleon","Elephant","Giraffe","Hippopotamus"],
+answer:0,
+explanation:"Some chameleons have extremely long projectile tongues."
+},
+
+{
+question:"What makes a platypus particularly unusual among mammals?",
+options:[
+"It can breathe underwater forever",
+"It lays eggs",
+"It has feathers",
+"It has gills"
+],
+answer:1,
+explanation:"The platypus is one of the few living mammals that lay eggs."
+},
+
+{
+question:"Which animal has a transparent third eyelid that helps protect its eyes underwater?",
+options:["Crocodile","Rabbit","Horse","Elephant"],
+answer:0,
+explanation:"Crocodiles have a transparent third eyelid called a nictitating membrane."
+},
+
+{
+question:"Why can some frogs survive being partially frozen?",
+options:[
+"They stop needing oxygen completely",
+"Their bodies use compounds such as glucose to protect cells",
+"They have naturally warm blood",
+"Their skin becomes waterproof"
+],
+answer:1,
+explanation:"Some frogs accumulate glucose that helps protect their cells from freezing damage."
+},
+
+{
+question:"Which animal has a tongue that can be about as long as its body?",
+options:["Blue whale","Giraffe","Frog","Elephant"],
+answer:1,
+explanation:"A giraffe's tongue can reach roughly 45–50 cm."
+},
+
+{
+question:"What is special about the blood of horseshoe crabs?",
+options:[
+"It is naturally fluorescent",
+"It contains copper and is blue",
+"It contains no oxygen",
+"It is black"
+],
+answer:1,
+explanation:"Horseshoe crab blood is blue because it uses the copper-containing protein hemocyanin."
+},
+
+{
+question:"Which animal is famous for being able to regenerate lost limbs and other body parts?",
+options:["Axolotl","Cheetah","Eagle","Camel"],
+answer:0,
+explanation:"Axolotls can regenerate limbs and several other tissues and organs."
+},
+
+{
+question:"Why do flamingos often appear pink or reddish?",
+options:[
+"Their feathers contain pigments obtained from their diet",
+"Their blood is pink",
+"Their feathers are naturally red",
+"Sunlight permanently dyes their feathers"
+],
+answer:0,
+explanation:"Flamingo coloration comes largely from carotenoid pigments in their food."
+},
+
+{
+question:"Which animal can use echolocation to navigate and hunt?",
+options:["Bat","Giraffe","Kangaroo","Panda"],
+answer:0,
+explanation:"Many bats use echolocation to detect objects and prey."
+},
+
+{
+question:"What is unusual about an axolotl's ability to regenerate?",
+options:[
+"It can regenerate certain complex tissues and organs",
+"It can regenerate only its skin",
+"It cannot regenerate anything",
+"It can regenerate only its teeth"
+],
+answer:0,
+explanation:"Axolotls can regenerate complex structures such as limbs and parts of organs."
+},
+
+{
+question:"Which animal has a highly developed sense of smell?",
+options:["African elephant","Penguin","Koala","Frog"],
+answer:0,
+explanation:"African elephants have an exceptionally strong sense of smell."
+},
+
+{
+question:"What is unusual about a mantis shrimp's vision?",
+options:[
+"It has no eyes",
+"Its visual system can detect types of polarized light",
+"It can only see in darkness",
+"It sees only in black and white"
+],
+answer:1,
+explanation:"Mantis shrimp have highly complex visual systems and can detect polarized light."
+},
+
+{
+question:"Which animal has bright orange front teeth because its tooth enamel contains iron?",
+options:["Beaver","Sea otter","Polar bear","Chinchilla"],
+answer:0,
+explanation:"Beavers have orange front teeth because their enamel contains iron."
+},
+
+{
+question:"Which fact is true regarding the Greenland shark?",
+options:[
+"It can live up to 400 years, making it the longest-living vertebrate",
+"It lives exclusively in freshwater lakes",
+"It is the fastest swimming shark in the world",
+"It possesses bioluminescent glowing eyes"
+],
+answer:0,
+explanation:"Greenland sharks are extraordinarily long-lived, with estimates reaching several centuries."
+},
+
+{
+question:"What unique trait distinguishes the platypus from most other mammals?",
+options:[
+"It lays eggs instead of giving live birth",
+"It breathes underwater through gills",
+"It has no fur on its body",
+"It is capable of true flight"
+],
+answer:0,
+explanation:"The platypus is a monotreme and lays eggs."
+},
+
+{
+question:"Why do the eyes of big cats like lions and tigers glow in the dark when light shines on them?",
+options:[
+"Because of the reflective Tapetum lucidum layer behind their retina",
+"Because their eyes contain natural phosphorus",
+"Because their eyes emit their own light",
+"They trap daylight energy inside their irises"
+],
+answer:0,
+explanation:"The tapetum lucidum reflects light through the retina and improves low-light vision."
+},
+
+{
+question:"Which bird holds the record for the longest non-stop migration, flying about 13,000 km over 11 days?",
+options:["Bar-tailed godwit","Arctic tern","Eagle","Flamingo"],
+answer:0,
+explanation:"The bar-tailed godwit is famous for extraordinary nonstop migrations."
+},
+
+{
+question:"Which animal can freeze nearly half of its body solid during winter and thaw back to life in spring?",
+options:["Wood frog","Arctic fox","Sea otter","Chameleon"],
+answer:0,
+explanation:"Wood frogs can survive with a large portion of their body frozen."
+},
+
+{
+question:"What is remarkable about the strike of a mantis shrimp?",
+options:[
+"It strikes with extraordinary speed and can shatter aquarium glass",
+"It is extremely weak and used only for sweeping algae",
+"It generates a high-voltage electrical discharge",
+"It can only strike above the surface of the water"
+],
+answer:0,
+explanation:"Mantis shrimp strike extremely rapidly and their strikes can create cavitation bubbles."
+},
+
+{
+question:"Which land animal has the largest eyes?",
+options:["Elephant","Ostrich","Giraffe","Horse"],
+answer:1,
+explanation:"The ostrich has the largest eyes of any land animal."
+},
+
+{
+question:"Which animal is famous for using stones as tools to open food?",
+options:["Sea otter","Penguin","Seal","Dolphin"],
+answer:0,
+explanation:"Sea otters commonly use stones as tools to break open hard-shelled prey."
+},
+
+{
+question:"Which animal produces very powerful low-frequency sounds that can travel enormous distances underwater?",
+options:["Blue whale","Dolphin","Shark","Orca"],
+answer:0,
+explanation:"Blue whales produce powerful low-frequency calls that can travel very long distances through the ocean."
+}
+];
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let currentTest = 1;
+let currentQuestion = 0;
+let quizQuestions = [];
+let totalScore = 0;
+let timer;
+let timeLeft = 15;
+let answered = false;
+
+
+/* =========================
+   TEST LOCK SYSTEM
+========================= */
+
+/*
+   Yeni sistem:
+   Başlanğıcda yalnız Test 1 açıqdır.
+   Köhnə localStorage məlumatları istifadə olunmur.
+*/
+
+let test1Completed =
+    localStorage.getItem("animalQuiz_v2_test1") === "true";
+
+let test2Completed =
+    localStorage.getItem("animalQuiz_v2_test2") === "true";
+
+let test3Completed =
+    localStorage.getItem("animalQuiz_v2_test3") === "true";
+
+
+/* =========================
+   TEST CARDS
+========================= */
+
+function updateTests(){
+
+    const card2 =
+        document.getElementById("testCard2");
+
+    const card3 =
+        document.getElementById("testCard3");
+
+
+    /* TEST 2 */
+
+    if(test1Completed){
+
+        card2.classList.remove("locked");
+
+        card2.innerHTML = `
+            <h3>Test 2</h3>
+            <p>Questions 11–20</p>
+            <button
+                class="test-btn"
+                onclick="startTest(2)"
+            >
+                Start
+            </button>
+        `;
+
+    }
+    else{
+
+        card2.classList.add("locked");
+
+        card2.innerHTML = `
+            <h3>🔒 Test 2</h3>
+            <p>Questions 11–20</p>
+            <button
+                class="test-btn"
+                onclick="startTest(2)"
+            >
+                Locked
+            </button>
+        `;
+    }
+
+
+    /* TEST 3 */
+
+    if(test2Completed){
+
+        card3.classList.remove("locked");
+
+        card3.innerHTML = `
+            <h3>Test 3</h3>
+            <p>Questions 21–30</p>
+            <button
+                class="test-btn"
+                onclick="startTest(3)"
+            >
+                Start
+            </button>
+        `;
+
+    }
+    else{
+
+        card3.classList.add("locked");
+
+        card3.innerHTML = `
+            <h3>🔒 Test 3</h3>
+            <p>Questions 21–30</p>
+            <button
+                class="test-btn"
+                onclick="startTest(3)"
+            >
+                Locked
+            </button>
+        `;
+    }
+}
+
+
+/* =========================
+   START TEST
+========================= */
+
+function startTest(testNumber){
+
+    const name =
+        document.getElementById("playerName")
+        .value
+        .trim();
+
+
+    if(!name){
+
+        alert("Please enter your name first.");
+
+        document
+            .getElementById("playerName")
+            .focus();
+
+        return;
+    }
+
+
+    if(testNumber === 2 && !test1Completed){
+
+        alert("Complete Test 1 first.");
+
+        return;
+    }
+
+
+    if(testNumber === 3 && !test2Completed){
+
+        alert("Complete Test 2 first.");
+
+        return;
+    }
+
+
+    currentTest = testNumber;
+
+    currentQuestion = 0;
+
+    totalScore = 0;
+
+
+    const startIndex =
+        (testNumber - 1) * 10;
+
+
+    quizQuestions =
+        questions.slice(
+            startIndex,
+            startIndex + 10
+        );
+
+
+    document.getElementById("homePage")
+        .style.display = "none";
+
+    document.getElementById("resultPage")
+        .style.display = "none";
+
+    document.getElementById("quizPage")
+        .style.display = "block";
+
+
+    showQuestion();
+}
+
+
+/* =========================
+   SHOW QUESTION
+========================= */
+
+function showQuestion(){
+
+    clearInterval(timer);
+
+    answered = false;
+
+    timeLeft = 15;
+
+
+    document.getElementById("timer")
+        .textContent = timeLeft;
+
+
+    document.getElementById("progressBar")
+        .style.width = "100%";
+
+
+    document.getElementById("questionNumber")
+        .textContent =
+        `Question ${currentQuestion + 1} / 10`;
+
+
+    const q =
+        quizQuestions[currentQuestion];
+
+
+    document.getElementById("question")
+        .textContent = q.question;
+
+
+    const optionsContainer =
+        document.getElementById("options");
+
+
+    optionsContainer.innerHTML = "";
+
+
+    q.options.forEach((option,index)=>{
+
+        const button =
+            document.createElement("button");
+
+
+        button.className = "option";
+
+        button.textContent = option;
+
+
+        button.onclick = () =>
+            selectAnswer(index,button);
+
+
+        optionsContainer.appendChild(button);
+
+    });
+
+
+    document.getElementById("feedback")
+        .style.display = "none";
+
+
+    startTimer();
+}
+
+
+/* =========================
+   TIMER
+========================= */
+
+function startTimer(){
+
+    timer = setInterval(()=>{
+
+        timeLeft--;
+
+
+        document.getElementById("timer")
+            .textContent = timeLeft;
+
+
+        document.getElementById("progressBar")
+            .style.width =
+            (timeLeft / 15 * 100) + "%";
+
+
+        if(timeLeft <= 0){
+
+            clearInterval(timer);
+
+            timeUp();
+        }
+
+    },1000);
+}
+
+
+/* =========================
+   SCORE SYSTEM
+========================= */
+
+function calculatePoints(secondsLeft){
+
+    if(secondsLeft >= 14){
+        return 10;
+    }
+
+    if(secondsLeft >= 10){
+        return 9;
+    }
+
+    if(secondsLeft >= 7){
+        return 8;
+    }
+
+    if(secondsLeft >= 5){
+        return 7;
+    }
+
+    if(secondsLeft >= 3){
+        return 5;
+    }
+
+    if(secondsLeft >= 1){
+        return 3;
+    }
+
+    return 0;
+}
+
+
+/* =========================
+   ANSWER
+========================= */
+
+function selectAnswer(index,button){
+
+    if(answered) return;
+
+    answered = true;
+
+    clearInterval(timer);
+
+
+    const q =
+        quizQuestions[currentQuestion];
+
+
+    const allOptions =
+        document.querySelectorAll(".option");
+
+
+    allOptions.forEach(option=>{
+        option.classList.add("disabled");
+    });
+
+
+    let nextDelay;
+
+
+    /* CORRECT */
+
+    if(index === q.answer){
+
+        button.classList.add("correct");
+
+
+        const points =
+            calculatePoints(timeLeft);
+
+
+        totalScore += points;
+
+
+        document.getElementById("feedbackTitle")
+            .textContent =
+            `Correct! +${points} points`;
+
+
+        /*
+           Düz cavab:
+           0.1 saniyə
+        */
+
+        nextDelay = 100;
+
+    }
+
+
+    /* WRONG */
+
+    else{
+
+        button.classList.add("wrong");
+
+
+        allOptions[q.answer]
+            .classList.add("correct");
+
+
+        document.getElementById("feedbackTitle")
+            .textContent =
+            "Wrong! +0 points";
+
+
+        /*
+           Səhv cavab:
+           0.3 saniyə
+        */
+
+        nextDelay = 300;
+    }
+
+
+    document.getElementById("feedbackText")
+        .textContent = q.explanation;
+
+
+    document.getElementById("feedback")
+        .style.display = "block";
+
+
+    setTimeout(()=>{
+
+        currentQuestion++;
+
+
+        if(
+            currentQuestion >=
+            quizQuestions.length
+        ){
+
+            finishTest();
+
+        }
+        else{
+
+            showQuestion();
+
+        }
+
+    },nextDelay);
+}
+
+
+/* =========================
+   TIME UP
+========================= */
+
+function timeUp(){
+
+    if(answered) return;
+
+    answered = true;
+
+    clearInterval(timer);
+
+
+    /*
+       Vaxt bitdi:
+       0 xal
+    */
+
+    document.getElementById("timeup")
+        .style.display = "flex";
+
+
+    /*
+       0.3 saniyə sonra
+       növbəti suala keçir
+    */
+
+    setTimeout(()=>{
+
+        document.getElementById("timeup")
+            .style.display = "none";
+
+
+        currentQuestion++;
+
+
+        if(
+            currentQuestion >=
+            quizQuestions.length
+        ){
+
+            finishTest();
+
+        }
+        else{
+
+            showQuestion();
+
+        }
+
+    },300);
+}
+
+
+/* =========================
+   FINISH TEST
+========================= */
+
+function finishTest(){
+
+    clearInterval(timer);
+
+
+    /* TEST 1 TAMAMLANDI */
+
+    if(currentTest === 1){
+
+        test1Completed = true;
+
+        localStorage.setItem(
+            "animalQuiz_v2_test1",
+            "true"
+        );
+    }
+
+
+    /* TEST 2 TAMAMLANDI */
+
+    if(currentTest === 2){
+
+        test2Completed = true;
+
+        localStorage.setItem(
+            "animalQuiz_v2_test2",
+            "true"
+        );
+    }
+
+
+    /* TEST 3 TAMAMLANDI */
+
+    if(currentTest === 3){
+
+        test3Completed = true;
+
+        localStorage.setItem(
+            "animalQuiz_v2_test3",
+            "true"
+        );
+    }
+
+
+    document.getElementById("quizPage")
+        .style.display = "none";
+
+
+    document.getElementById("resultPage")
+        .style.display = "block";
+
+
+    const name =
+        document.getElementById("playerName")
+        .value
+        .trim();
+
+
+    document.getElementById("resultPlayer")
+        .textContent =
+        `${name} — Test ${currentTest}`;
+
+
+    document.getElementById("finalScore")
+        .textContent =
+        `${totalScore} / 100`;
+
+
+    let message;
+
+
+    if(totalScore >= 90){
+
+        message =
+            "🔥 Amazing! Excellent knowledge!";
+
+    }
+    else if(totalScore >= 75){
+
+        message =
+            "👏 Great job!";
+
+    }
+    else if(totalScore >= 60){
+
+        message =
+            "👍 Good job!";
+
+    }
+    else if(totalScore >= 40){
+
+        message =
+            "🙂 Keep practicing!";
+
+    }
+    else{
+
+        message =
+            "💪 Try again and improve your score!";
+
+    }
+
+
+    document.getElementById("resultMessage")
+        .textContent = message;
+
+
+    updateTests();
+}
+
+
+/* =========================
+   RETRY
+========================= */
+
+function retryTest(){
+
+    document.getElementById("resultPage")
+        .style.display = "none";
+
+
+    document.getElementById("quizPage")
+        .style.display = "block";
+
+
+    currentQuestion = 0;
+
+    totalScore = 0;
+
+
+    showQuestion();
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+function goHome(){
+
+    clearInterval(timer);
+
+
+    document.getElementById("quizPage")
+        .style.display = "none";
+
+
+    document.getElementById("resultPage")
+        .style.display = "none";
+
+
+    document.getElementById("timeup")
+        .style.display = "none";
+
+
+    document.getElementById("homePage")
+        .style.display = "flex";
+
+
+    updateTests();
+}
+
+
+/* =========================
+   START
+========================= */
+
+updateTests();
+
+</script>
+
+</body>
+  </html>
